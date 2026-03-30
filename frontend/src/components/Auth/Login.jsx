@@ -8,6 +8,7 @@ import {
   Paper,
   InputAdornment,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { useState } from "react";
 import { MailOutline, LockOutlined, ArrowForward } from "@mui/icons-material";
@@ -16,11 +17,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
-  // const handleLogin = (e) => {
-  //   e.preventDefault();
-  //   console.log(email, password);
-  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,10 +33,17 @@ function Login() {
       });
 
       localStorage.setItem("token", res.data.token);
-
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      navigate("/dashboard");
+      const role = res.data.user.role;
+
+      console.log("ROLE:", role);
+
+      if (role === "manager") {
+        navigate("/managerDashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.log(error);
       alert("Login failed");
@@ -232,7 +235,5 @@ function Login() {
     </Box>
   );
 }
-
-import { Stack } from "@mui/material";
 
 export default Login;

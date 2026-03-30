@@ -20,11 +20,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/dashboard" element={<ManagerDashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="kitchens" element={<KitchensPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/managerdashboard" element={<ManagerDashboard />} />
       </Routes>
 
       <Footer />

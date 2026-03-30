@@ -22,8 +22,8 @@ function Profile() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
-    name: "Momen Alomari",
-    email: "momen@vellora.io",
+    name: "razan bash",
+    email: "razan@vellora.io",
   });
 
   useEffect(() => {

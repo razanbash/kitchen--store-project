@@ -1,195 +1,319 @@
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  Paper,
+  Stack,
+  IconButton,
   Avatar,
-  TextField,
-  Button,
   Grid,
-  Divider,
 } from "@mui/material";
-import { useState } from "react";
-import { ArrowForward, CameraAlt } from "@mui/icons-material";
+import {
+  Kitchen,
+  AddBox,
+  Person,
+  Logout,
+  AdminPanelSettings,
+  NorthEast,
+  Tune,
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-function Profile() {
-  const user = JSON.parse(
-    localStorage.getItem("user") ||
-      '{"name": "Momen Alomari", "email": "momen@vellora.com"}',
-  );
-  const [isEditing, setIsEditing] = useState(false);
+function ManagerDashboard() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState({ name: "Manager" });
+
+  useEffect(() => {
+    const saved = localStorage.getItem("user");
+    if (saved) setUser(JSON.parse(saved));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  const eliteTile = {
+    height: "350px",
+    bgcolor: "#c9c6c6",
+    border: "1px solid #eee",
+    p: 6,
+    position: "relative",
+    cursor: "pointer",
+    transition: "all 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+    "&:hover": {
+      bgcolor: "#1a1a1a",
+      color: "#fff",
+      transform: "translateY(-10px) rotateX(4deg)",
+      boxShadow: "0 40px 100px rgba(0,0,0,0.2)",
+      "& .tile-number": { color: "#333", transform: "scale(1.2)" },
+      "& .tile-icon": { color: "#a67c52", transform: "translateY(-10px)" },
+      "& .tile-arrow": { opacity: 1, transform: "translate(0, 0)" },
+    },
+  };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#FFFFFF", p: { xs: 4, md: 12 } }}>
-      <Grid container spacing={8} alignItems="center" sx={{ mb: 10 }}>
-        <Grid item xs={12} md={3}>
-          <Box sx={{ position: "relative", width: 180, height: 180 }}>
-            <Avatar
-              sx={{
-                width: "100%",
-                height: "100%",
-                bgcolor: "#000",
-                fontSize: "4rem",
-                fontWeight: 200,
-                borderRadius: 0,
-              }}
-            >
-              {user.name?.[0]}
-            </Avatar>
-            <Button
-              component="label"
-              sx={{
-                position: "absolute",
-                bottom: -10,
-                right: -10,
-                bgcolor: "#fff",
-                border: "1px solid #000",
-                minWidth: 0,
-                p: 1,
-                borderRadius: 0,
-                "&:hover": { bgcolor: "#f0f0f0" },
-              }}
-            >
-              <CameraAlt sx={{ fontSize: 18, color: "#000" }} />
-              <input hidden accept="image/*" type="file" />
-            </Button>
-          </Box>
-        </Grid>
-
-        <Grid item xs={12} md={9}>
-          <Typography
-            variant="overline"
-            sx={{ letterSpacing: "0.5em", color: "#888" }}
-          >
-            VERIFIED DESIGNER
-          </Typography>
-          <Typography
-            variant="h1"
-            sx={{
-              fontWeight: 800,
-              fontSize: "4.5rem",
-              letterSpacing: "-0.04em",
-              color: "#000",
-              lineHeight: 1,
-            }}
-          >
-            {user.name.split(" ")[0]} <br />
-            <span style={{ fontWeight: 200, color: "#AAA" }}>
-              {user.name.split(" ")[1]}
-            </span>
-          </Typography>
-        </Grid>
-      </Grid>
-
-      <Divider sx={{ mb: 10, borderColor: "#EEE" }} />
-
-      <Grid container spacing={10}>
-        <Grid item xs={12} md={4}>
-          <Typography variant="h6" sx={{ fontWeight: 800, mb: 2 }}>
-            STUDIO CREDENTIALS
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#666", mb: 4 }}>
-            Your account is currently linked to the Milan Architectural
-            Division.
-          </Typography>
-          <Button
-            variant="text"
-            onClick={() => setIsEditing(!isEditing)}
-            endIcon={<ArrowForward />}
-            sx={{
-              color: "#000",
-              fontWeight: 800,
-              p: 0,
-              "&:hover": { bgcolor: "transparent", letterSpacing: "0.1em" },
-              transition: "0.3s",
-            }}
-          >
-            {isEditing ? "SAVE CHANGES" : "EDIT PROFILE"}
-          </Button>
-        </Grid>
-
-        <Grid item xs={12} md={8}>
-          <Stack spacing={6}>
-            <Box>
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: 900, color: "#CCC", letterSpacing: "0.1em" }}
-              >
-                FULL NAME
-              </Typography>
-              <TextField
-                variant="standard"
-                fullWidth
-                defaultValue={user.name}
-                disabled={!isEditing}
-                sx={{
-                  "& .MuiInput-input": {
-                    fontSize: "1.5rem",
-                    fontWeight: 300,
-                    py: 1,
-                  },
-                }}
-              />
-            </Box>
-
-            <Box>
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: 900, color: "#CCC", letterSpacing: "0.1em" }}
-              >
-                EMAIL ADDRESS
-              </Typography>
-              <TextField
-                variant="standard"
-                fullWidth
-                defaultValue={user.email}
-                disabled={!isEditing}
-                sx={{
-                  "& .MuiInput-input": {
-                    fontSize: "1.5rem",
-                    fontWeight: 300,
-                    py: 1,
-                  },
-                }}
-              />
-            </Box>
-
-            <Box>
-              <Typography
-                variant="caption"
-                sx={{ fontWeight: 900, color: "#CCC", letterSpacing: "0.1em" }}
-              >
-                DESIGN PHILOSOPHY
-              </Typography>
-              <TextField
-                variant="standard"
-                fullWidth
-                multiline
-                defaultValue="The intersection of Italian tradition and future-proof minimalism."
-                disabled={!isEditing}
-                sx={{
-                  "& .MuiInput-input": {
-                    fontSize: "1.1rem",
-                    fontWeight: 300,
-                    py: 1,
-                    lineHeight: 1.6,
-                  },
-                }}
-              />
-            </Box>
-          </Stack>
-        </Grid>
-      </Grid>
-
-      <Box sx={{ mt: 15, textAlign: "right" }}>
-        <Typography
-          variant="caption"
-          sx={{ color: "#DDD", letterSpacing: "0.3em" }}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#fdfbf7",
+        display: "flex",
+        perspective: "1500px",
+        overflow: "hidden",
+      }}
+    >
+      <Box
+        sx={{
+          width: "120px",
+          borderRight: "1px solid #eee",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          py: 8,
+          zIndex: 10,
+        }}
+      >
+        <Avatar
+          sx={{
+            width: 45,
+            height: 45,
+            bgcolor: "#000",
+            borderRadius: 0,
+            fontSize: "0.9rem",
+            fontWeight: 900,
+          }}
         >
-          VELLORA / PROFILE SYSTEM v2.0
+          V
+        </Avatar>
+        <Typography
+          sx={{
+            transform: "rotate(-90deg)",
+            letterSpacing: "1.5em",
+            fontSize: "0.6rem",
+            fontWeight: 900,
+            color: "#ccc",
+            whiteSpace: "nowrap",
+          }}
+        >
+          ESTABLISHED / 2026
+        </Typography>
+        <IconButton sx={{ color: "#000" }}>
+          <Tune />
+        </IconButton>
+      </Box>
+
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: { xs: 4, md: 10 },
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <Typography
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontSize: "45rem",
+            fontWeight: 900,
+            color: "#f4f1ea",
+            zIndex: -1,
+            opacity: 0.6,
+            userSelect: "none",
+          }}
+        >
+          {user.name?.[0] || "M"}
+        </Typography>
+
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="flex-end"
+          sx={{ mb: 12 }}
+        >
+          <Box>
+            <Typography
+              variant="overline"
+              sx={{ letterSpacing: "0.8em", color: "#a67c52", fontWeight: 900 }}
+            >
+              VELLORA_CORE_SYSTEM
+            </Typography>
+            <Typography
+              variant="h1"
+              sx={{
+                fontFamily: "serif",
+                fontSize: "6rem",
+                fontWeight: 200,
+                lineHeight: 0.9,
+                mt: 2,
+              }}
+            >
+              Active <br />
+              <b>Archives.</b>
+            </Typography>
+          </Box>
+          <Box sx={{ textAlign: "right" }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 900, letterSpacing: "-0.02em" }}
+            >
+              {user.name.toUpperCase()}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "#a67c52", letterSpacing: "0.2em" }}
+            >
+              ACCESS_ROOT_LEVEL
+            </Typography>
+          </Box>
+        </Stack>
+
+        <Grid container spacing={4}>
+          {[
+            {
+              label: "Collections",
+              icon: <Kitchen />,
+              sub: "Manage Kitchen Nodes",
+              path: "/kitchens",
+              num: "01",
+            },
+            {
+              label: "Deployment",
+              icon: <AddBox />,
+              sub: "Push New Assets",
+              path: "/kitchens",
+              num: "02",
+            },
+            {
+              label: "Account",
+              icon: <Person />,
+              sub: "Identity Profile",
+              path: "/profile",
+              num: "03",
+            },
+            {
+              label: "Terminate",
+              icon: <Logout />,
+              sub: "Secure Exit",
+              path: "logout",
+              num: "04",
+            },
+          ].map((tile, i) => (
+            <Grid item xs={12} md={6} key={i}>
+              <Box
+                sx={eliteTile}
+                onClick={() =>
+                  tile.path === "logout" ? handleLogout() : navigate(tile.path)
+                }
+              >
+                <Typography
+                  className="tile-number"
+                  sx={{
+                    position: "absolute",
+                    top: -20,
+                    right: 20,
+                    fontSize: "10rem",
+                    fontWeight: 900,
+                    color: "#f9f9f9",
+                    transition: "0.6s",
+                    zIndex: 0,
+                  }}
+                >
+                  {tile.num}
+                </Typography>
+
+                <Box
+                  sx={{
+                    position: "relative",
+                    zIndex: 1,
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Box
+                    className="tile-icon"
+                    sx={{ color: "#a67c52", transition: "0.4s", mb: 2 }}
+                  >
+                    {tile.icon}
+                  </Box>
+                  <Typography
+                    variant="h3"
+                    sx={{ fontFamily: "serif", fontWeight: 400, mb: 1 }}
+                  >
+                    {tile.label}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#888", letterSpacing: "0.1em", mb: 6 }}
+                  >
+                    {tile.sub}
+                  </Typography>
+
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    sx={{ mt: "auto" }}
+                  >
+                    <Typography
+                      sx={{
+                        fontWeight: 900,
+                        fontSize: "0.7rem",
+                        letterSpacing: "0.3em",
+                      }}
+                    >
+                      INITIALIZE
+                    </Typography>
+                    <NorthEast
+                      className="tile-arrow"
+                      sx={{
+                        ml: 1,
+                        opacity: 0,
+                        transform: "translate(-10px, 10px)",
+                        transition: "0.4s",
+                        fontSize: "1rem",
+                      }}
+                    />
+                  </Stack>
+                </Box>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      <Box
+        sx={{
+          width: "60px",
+          borderLeft: "1px solid #eee",
+          display: { xs: "none", md: "flex" },
+          flexDirection: "column",
+          alignItems: "center",
+          py: 8,
+        }}
+      >
+        <AdminPanelSettings sx={{ color: "#a67c52", mb: 4 }} />
+        <Box sx={{ flexGrow: 1, width: "1px", bgcolor: "#eee", mb: 4 }} />
+        <Typography
+          sx={{
+            transform: "rotate(90deg)",
+            fontSize: "0.5rem",
+            color: "#bbb",
+            whiteSpace: "nowrap",
+            letterSpacing: "0.5em",
+          }}
+        >
+          SYSTEM_ENCRYPTED_256
         </Typography>
       </Box>
     </Box>
   );
 }
 
-export default Profile;
+export default ManagerDashboard;
