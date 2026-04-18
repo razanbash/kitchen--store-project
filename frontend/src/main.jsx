@@ -1,16 +1,24 @@
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import theme from "./theme.js";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
-import "./components/Kitchens/KitchensContext.jsx";
-import { KitchensProvider } from "./components/Kitchens/KitchensContext.jsx";
+import { KitchensProvider } from "./context/KitchensContext.jsx";
+import { AuthProvider } from "./context/AuthContext"; 
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <KitchensProvider>
-        <App />
-      </KitchensProvider>
-    </BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <BrowserRouter>
+        <AuthProvider>
+          <KitchensProvider>
+            <App />
+          </KitchensProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 );

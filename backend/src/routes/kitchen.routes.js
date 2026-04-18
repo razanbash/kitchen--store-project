@@ -4,7 +4,7 @@ import {
   createKitchen,
   updateKitchen,
   deleteKitchen,
-} from "../controllers/auth.controllers.js";
+} from "../controllers/kitchen.controllers.js";
 
 import { verifyToken } from "../middleware/auth.middleware.js";
 

@@ -5,19 +5,26 @@ import {
   Box,
   Link,
   Container,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import { useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+
+import { AuthContext } from "../../context/AuthContext";
+import api from "../../api";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = JSON.parse(localStorage.getItem("user"));
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
+  const { user, setUser } = useContext(AuthContext);
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const navLinkStyle = (path) => ({
     color: location.pathname === path ? "#1a1a1a" : "#888",
@@ -46,6 +53,32 @@ function Navbar() {
       },
     },
   });
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+      setUser(null);
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    setDrawerOpen(false);
+  };
+
+  const navLinks = user
+    ? [
+        { label: "Kitchens", path: "/kitchens" },
+        { label: "About", path: "/about" },
+        { label: "Contact", path: "/contact" },
+      ]
+    : [
+        { label: "Login", path: "/login" },
+        { label: "Register", path: "/register" },
+      ];
 
   return (
     <AppBar
@@ -77,7 +110,7 @@ function Navbar() {
 
           <Box
             sx={{
-              display: "flex",
+              display: { xs: "none", md: "flex" },
               alignItems: "center",
               gap: { xs: 2, md: 5 },
             }}
@@ -153,8 +186,84 @@ function Navbar() {
               </>
             )}
           </Box>
+
+          <IconButton
+            onClick={() => setDrawerOpen(true)}
+            sx={{ display: { xs: "flex", md: "none" }, color: "#1a1a1a" }}
+          >
+            <MenuIcon />
+          </IconButton>
         </Toolbar>
       </Container>
+
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            width: 260,
+            backgroundColor: "rgba(255,255,255,0.97)",
+            backdropFilter: "blur(20px)",
+            px: 3,
+            py: 4,
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
+          <IconButton
+            onClick={() => setDrawerOpen(false)}
+            sx={{ color: "#1a1a1a" }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        <List
+          disablePadding
+          sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+        >
+          {navLinks.map(({ label, path }) => (
+            <ListItem key={path} disablePadding>
+              <Link
+                sx={navLinkStyle(path)}
+                onClick={() => handleNavigate(path)}
+              >
+                {label}
+              </Link>
+            </ListItem>
+          ))}
+
+          {user && (
+            <ListItem disablePadding>
+              <Box
+                onClick={() => {
+                  handleLogout();
+                  setDrawerOpen(false);
+                }}
+                sx={{
+                  ...navLinkStyle(""),
+                  bgcolor: "#1a1a1a",
+                  color: "#fff !important",
+                  px: 3,
+                  py: 1.2,
+                  fontSize: "0.65rem",
+                  fontWeight: 700,
+                  borderRadius: "2px",
+                  "&:after": { display: "none" },
+                  "&:hover": {
+                    bgcolor: "#444",
+                    transform: "translateY(-1px)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  },
+                }}
+              >
+                Logout
+              </Box>
+            </ListItem>
+          )}
+        </List>
+      </Drawer>
     </AppBar>
   );
 }

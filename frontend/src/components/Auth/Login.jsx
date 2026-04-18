@@ -1,5 +1,7 @@
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext.jsx";
 import {
   Box,
   TextField,
@@ -17,6 +19,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,17 +29,26 @@ function Login() {
       return;
     }
 
-    try {
-      const res = await api.post("/auth/login", {
-        email: email,
-        password: password,
-      });
+    if (!email.includes("@")) {
+      alert("Invalid email");
+      return;
+    }
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+    try {
+      const res = await api.post(
+        "/auth/login",
+        {
+          email: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      setUser(res.data.user);
 
       const role = res.data.user.role;
-
       console.log("ROLE:", role);
 
       if (role === "manager") {
@@ -49,7 +61,6 @@ function Login() {
       alert("Login failed");
     }
   };
-
   return (
     <Box
       sx={{

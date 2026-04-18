@@ -25,25 +25,40 @@ function Register() {
 
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+   const handleRegister = async (e) => {
+  e.preventDefault();
 
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
+  if (!formData.name || !formData.email || !formData.password) {
+    alert("Please fill all fields");
+    return;
+  }
 
-      console.log(res.data);
-      alert("Registered successfully ✅");
+  if (formData.password.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
 
-      navigate("/login");
-    } catch (err) {
-      console.log(err);
-      alert("Error ❌");
-    }
-  };
+  if (!formData.email.includes("@")) {
+    alert("Invalid email");
+    return;
+  }
+
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/register", {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    });
+
+    console.log(res.data);
+    alert("Registered successfully ✅");
+    navigate("/login");
+
+  } catch (err) {
+    console.log(err);
+    alert("Error ❌");
+  }
+};
 
   return (
     <Box

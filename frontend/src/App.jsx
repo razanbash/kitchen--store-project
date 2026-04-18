@@ -10,6 +10,8 @@ import Profile from "./components/Dashboard/Profile.jsx";
 import KitchensPage from "./components/Kitchens/KitchensPage.jsx";
 import AboutPage from "./Pages/AboutPage.jsx";
 import ContactPage from "./Pages/ContactPage.jsx";
+import ProtectRoute from "./components/ProtectRoute.jsx";
+
 function App() {
   return (
     <>
@@ -19,12 +21,41 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="kitchens" element={<KitchensPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/managerdashboard" element={<ManagerDashboard />} />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectRoute>
+              <UserDashboard />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectRoute>
+              <Profile />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/kitchens"
+          element={
+            <ProtectRoute>
+              <KitchensPage />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/managerdashboard"
+          element={
+            <ProtectRoute>
+              <ManagerDashboard />
+            </ProtectRoute>
+          }
+        />
       </Routes>
 
       <Footer />

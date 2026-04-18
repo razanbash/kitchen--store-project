@@ -36,6 +36,7 @@ router.post("/register", async (req, res) => {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
+
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -54,19 +55,40 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Wrong password" });
     }
 
-    const token = jwt.sign({ id: user.id, role: user.role }, "secret123", {
-      expiresIn: "1d",
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role,
+      },
+      "secret123",
+      { expiresIn: "1d" },
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
     });
 
     res.json({
       message: "Login success",
-      token,
-      user,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
     console.log("LOGIN ERROR:", err);
     res.status(500).json({ message: "Server error" });
   }
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out" });
 });
 
 export default router;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import {
   Box,
   Typography,
@@ -17,20 +17,23 @@ import {
   Tune,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import api from "../../api";
 
 function ManagerDashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: "Manager" });
+  const { user, setUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("user");
-    if (saved) setUser(JSON.parse(saved));
-  }, []);
+  if (!user) return <Typography>Loading...</Typography>;
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+      setUser(null);
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const eliteTile = {
@@ -163,7 +166,7 @@ function ManagerDashboard() {
               variant="h6"
               sx={{ fontWeight: 900, letterSpacing: "-0.02em" }}
             >
-              {user.name.toUpperCase()}
+              {user.name?.toUpperCase() || "Manager"}
             </Typography>
             <Typography
               variant="caption"

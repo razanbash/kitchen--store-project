@@ -1,66 +1,51 @@
-import { pool } from "../config/db.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { findUserByEmail } from "../models/user.model.js";
 
-export const getKitchens = async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM kitchens");
-    res.json(result.rows);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: error.message });
-  }
-};
+export const login = async (req, res) => {
+  const { email, password } = req.body;
 
-export const createKitchen = async (req, res) => {
   try {
-    if (req.user.role !== "manager") {
-      return res.status(403).json({ message: "Only manager can add kitchen" });
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const { name, description, price, image } = req.body;
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    const result = await pool.query(
-      "INSERT INTO kitchens (name, description, price, image) VALUES ($1,$2,$3,$4) RETURNING *",
-      [name, description, price, image],
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role,
+      },
+      "secret123",
+      { expiresIn: "1d" },
     );
 
-    res.status(201).json(result.rows[0]);
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: false,
+    });
+
+    return res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-export const updateKitchen = async (req, res) => {
-  try {
-    if (req.user.role !== "manager") {
-      return res.status(403).json({ message: "Only manager can update" });
-    }
-
-    const { id } = req.params;
-    const { name, description, price, image } = req.body;
-
-    const result = await pool.query(
-      "UPDATE kitchens SET name=$1, description=$2, price=$3, image=$4 WHERE id=$5 RETURNING *",
-      [name, description, price, image, id],
-    );
-
-    res.json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const deleteKitchen = async (req, res) => {
-  try {
-    if (req.user.role !== "manager") {
-      return res.status(403).json({ message: "Only manager can delete" });
-    }
-
-    const { id } = req.params;
-
-    await pool.query("DELETE FROM kitchens WHERE id=$1", [id]);
-
-    res.json({ message: "Deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+export const logout = (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out" });
 };

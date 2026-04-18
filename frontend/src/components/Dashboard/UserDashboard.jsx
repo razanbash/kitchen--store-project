@@ -16,11 +16,13 @@ import {
   ArrowForwardRounded,
   TuneOutlined,
 } from "@mui/icons-material";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext.jsx";
 
 function UserDashboard() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") || '{"name": "Razan"}');
-  const firstName = user?.name?.split(" ")[0] || "Designer";
+  const { user } = useContext(AuthContext);
+  const firstName = user?.name?.split(" ")[0] || "User";
 
   const actionCardStyle = {
     p: { xs: 5, md: 8 },
