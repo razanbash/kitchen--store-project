@@ -11,7 +11,6 @@ import reservationRoutes from "./src/routes/reservation.routes.js";
 import errorHandler from "./src/middleware/errorMiddleware.js";
 import dotenv from "dotenv";
 
-
 dotenv.config();
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -26,7 +25,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://kitchen-store-project.vercel.app/",
+    origin: "https://kitchen-store-project.vercel.app",
     credentials: true,
   }),
 );
