@@ -18,11 +18,27 @@ import {
 } from "@mui/icons-material";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext.jsx";
+import { useEffect, useState } from "react";
+import api from "../../api.js";
 
 function UserDashboard() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const firstName = user?.name?.split(" ")[0] || "User";
+  const [approvedFeedbacks, setApprovedFeedbacks] = useState([]);
+
+  useEffect(() => {
+    const fetchApproved = async () => {
+      try {
+        const res = await api.get("/feedback/approved");
+        setApprovedFeedbacks(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchApproved();
+  }, []);
 
   const actionCardStyle = {
     p: { xs: 5, md: 8 },
@@ -340,6 +356,104 @@ function UserDashboard() {
             </Box>
           </Grid>
         </Grid>
+
+        <Box sx={{ mt: 12, pb: 10 }}>
+          <Typography
+            variant="h4"
+            sx={{
+              mb: 6,
+              fontFamily: "'Playfair Display', serif",
+              fontWeight: 500,
+              color: "#2d3436",
+              textAlign: "center",
+            }}
+          >
+            Our Clients Feedback
+          </Typography>
+
+          {approvedFeedbacks.length === 0 ? (
+            <Typography textAlign="center" color="gray">
+              No approved feedback yet...
+            </Typography>
+          ) : (
+            <Grid container spacing={4}>
+              {approvedFeedbacks.map((fb) => (
+                <Grid item xs={12} md={6} key={fb.id}>
+                  <Box
+                    sx={{
+                      p: 4,
+                      height: "100%",
+                      background:
+                        "linear-gradient(135deg, #ffffff 0%, #f7f9f9 100%)",
+                      borderRadius: "16px", 
+                      border: "1px solid #e0e7ff", 
+                      position: "relative",
+                      transition:
+                        "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                      display: "flex",
+                      flexDirection: "column",
+                      "&:hover": {
+                        transform: "scale(1.02)",
+                        boxShadow: "0 20px 40px rgba(166, 124, 82, 0.15)",
+                        borderColor: "#a67c52",
+                        "& .badge": {
+                          bgcolor: "#a67c52",
+                          color: "#fff",
+                        },
+                      },
+                    }}
+                  >
+                    {/* Colorful Accent Quote Mark */}
+                    <Box
+                      sx={{
+                        color: "#a67c52",
+                        fontSize: "40px",
+                        lineHeight: 1,
+                        fontFamily: "serif",
+                        mb: 1,
+                        opacity: 0.6,
+                      }}
+                    >
+                      “
+                    </Box>
+
+                    <Typography
+                      sx={{
+                        fontStyle: "italic",
+                        mb: 3,
+                        color: "#444",
+                        fontSize: "1.05rem",
+                        lineHeight: 1.6,
+                        flexGrow: 1,
+                      }}
+                    >
+                      {fb.message}
+                    </Typography>
+
+                    <Box
+                      className="badge"
+                      sx={{
+                        alignSelf: "flex-start",
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: "20px",
+                        fontSize: "10px",
+                        fontWeight: 700,
+                        color: "#a67c52",
+                        bgcolor: "#fdf5ed", 
+                        letterSpacing: "0.15em",
+                        transition: "0.3s ease",
+                        border: "1px solid rgba(166, 124, 82, 0.2)",
+                      }}
+                    >
+                      VERIFIED FEEDBACK
+                    </Box>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Box>
 
         <Box
           sx={{

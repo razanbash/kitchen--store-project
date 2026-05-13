@@ -3,11 +3,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const pool = new Pool({
+ const pool = new Pool({
   connectionString: process.env.CONNECTION_STRING,
 });
 
-export const connectDB = async () => {
+ export const connectDB = async () => {
   try {
     const client = await pool.connect();
     console.log("PostgreSQL connected successfully ✅");
@@ -17,3 +17,6 @@ export const connectDB = async () => {
     process.exit(1);
   }
 };
+
+
+export default pool;

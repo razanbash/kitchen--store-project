@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -6,15 +6,17 @@ import {
   IconButton,
   Avatar,
   Grid,
+  Button,
+  Paper,
+  Chip,
 } from "@mui/material";
 import {
   Kitchen,
   AddBox,
   Person,
   Logout,
-  AdminPanelSettings,
-  NorthEast,
   Tune,
+  AdminPanelSettings,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
@@ -23,8 +25,7 @@ import api from "../../api";
 function ManagerDashboard() {
   const navigate = useNavigate();
   const { user, setUser } = useContext(AuthContext);
-
-  if (!user) return <Typography>Loading...</Typography>;
+  const [feedbacks, setFeedbacks] = useState([]);
 
   const handleLogout = async () => {
     try {
@@ -36,284 +37,254 @@ function ManagerDashboard() {
     }
   };
 
-  const eliteTile = {
-    height: "350px",
-    bgcolor: "#c9c6c6",
-    border: "1px solid #eee",
-    p: 6,
-    position: "relative",
-    cursor: "pointer",
-    transition: "all 0.6s cubic-bezier(0.23, 1, 0.32, 1)",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    "&:hover": {
-      bgcolor: "#1a1a1a",
-      color: "#fff",
-      transform: "translateY(-10px) rotateX(4deg)",
-      boxShadow: "0 40px 100px rgba(0,0,0,0.2)",
-      "& .tile-number": { color: "#333", transform: "scale(1.2)" },
-      "& .tile-icon": { color: "#a67c52", transform: "translateY(-10px)" },
-      "& .tile-arrow": { opacity: 1, transform: "translate(0, 0)" },
-    },
+  const fetchFeedbacks = async () => {
+    try {
+      const res = await api.get("/feedback");
+      setFeedbacks(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
+  useEffect(() => {
+    fetchFeedbacks();
+  }, []);
+
+  const handleApprove = async (id) => {
+    await api.put(`/feedback/approve/${id}`);
+    fetchFeedbacks();
+  };
+
+  const handleReject = async (id) => {
+    await api.put(`/feedback/reject/${id}`);
+    fetchFeedbacks();
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/feedback/${id}`);
+      setFeedbacks((prev) => prev.filter((f) => f.id !== id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  if (!user) return null;
+
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#fdfbf7",
-        display: "flex",
-        perspective: "1500px",
-        overflow: "hidden",
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", bgcolor: "#fdfbf7", display: "flex" }}>
       <Box
         sx={{
-          width: "120px",
-          borderRight: "1px solid #eee",
+          width: "110px",
+          borderRight: "2px solid #eee",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "space-between",
-          py: 8,
-          zIndex: 10,
+          py: 5,
+          bgcolor: "#fff",
         }}
       >
         <Avatar
           sx={{
-            width: 45,
-            height: 45,
-            bgcolor: "#000",
+            width: 60,
+            height: 60,
+            bgcolor: "#a67c52",
             borderRadius: 0,
-            fontSize: "0.9rem",
+            mb: 8,
+            fontSize: "1.5rem",
             fontWeight: 900,
           }}
         >
           V
         </Avatar>
-        <Typography
-          sx={{
-            transform: "rotate(-90deg)",
-            letterSpacing: "1.5em",
-            fontSize: "0.6rem",
-            fontWeight: 900,
-            color: "#ccc",
-            whiteSpace: "nowrap",
-          }}
-        >
-          ESTABLISHED / 2026
-        </Typography>
-        <IconButton sx={{ color: "#000" }}>
-          <Tune />
-        </IconButton>
+
+        <Stack spacing={6} sx={{ color: "#1a1a1a" }}>
+          <Tune sx={{ fontSize: 28 }} />
+          <AdminPanelSettings sx={{ fontSize: 28 }} />
+        </Stack>
       </Box>
 
-      <Box
-        sx={{
-          flexGrow: 1,
-          p: { xs: 4, md: 10 },
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <Typography
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            fontSize: "45rem",
-            fontWeight: 900,
-            color: "#f4f1ea",
-            zIndex: -1,
-            opacity: 0.6,
-            userSelect: "none",
-          }}
-        >
-          {user.name?.[0] || "M"}
-        </Typography>
+      <Box sx={{ flexGrow: 1, p: { xs: 4, md: 10 } }}>
+        <Box sx={{ mb: 10 }}>
+          <Typography
+            variant="overline"
+            sx={{
+              letterSpacing: "0.4em",
+              color: "#a67c52",
+              fontWeight: 900,
+              fontSize: "1rem",
+            }}
+          >
+            MANAGER_PANEL
+          </Typography>
 
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="flex-end"
-          sx={{ mb: 12 }}
-        >
-          <Box>
-            <Typography
-              variant="overline"
-              sx={{ letterSpacing: "0.8em", color: "#a67c52", fontWeight: 900 }}
-            >
-              VELLORA_CORE_SYSTEM
-            </Typography>
-            <Typography
-              variant="h1"
-              sx={{
-                fontFamily: "serif",
-                fontSize: "6rem",
-                fontWeight: 200,
-                lineHeight: 0.9,
-                mt: 2,
-              }}
-            >
-              Active <br />
-              <b>Archives.</b>
-            </Typography>
-          </Box>
-          <Box sx={{ textAlign: "right" }}>
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 900, letterSpacing: "-0.02em" }}
-            >
-              {user.name?.toUpperCase() || "Manager"}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: "#a67c52", letterSpacing: "0.2em" }}
-            >
-              ACCESS_ROOT_LEVEL
-            </Typography>
-          </Box>
-        </Stack>
+          <Typography
+            variant="h1"
+            sx={{
+              fontFamily: "serif",
+              fontSize: "5rem",
+              fontWeight: 400,
+              color: "#1a1a1a",
+              mt: 1,
+              lineHeight: 1,
+            }}
+          >
+            Control <b>Unit.</b>
+          </Typography>
+        </Box>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} sx={{ mb: 12 }}>
           {[
             {
-              label: "Collections",
-              icon: <Kitchen />,
-              sub: "Manage Kitchen Nodes",
+              label: "COLLECTIONS",
+              icon: <Kitchen sx={{ fontSize: 40 }} />,
               path: "/kitchens",
-              num: "01",
+              color: "#a67c52",
             },
             {
-              label: "Deployment",
-              icon: <AddBox />,
-              sub: "Push New Assets",
+              label: "NEW PROJECT",
+              icon: <AddBox sx={{ fontSize: 40 }} />,
               path: "/kitchens",
-              num: "02",
+              color: "#5b6d5b",
             },
             {
-              label: "Account",
-              icon: <Person />,
-              sub: "Identity Profile",
+              label: "PROFILE",
+              icon: <Person sx={{ fontSize: 40 }} />,
               path: "/profile",
-              num: "03",
+              color: "#3d405b",
             },
             {
-              label: "Terminate",
-              icon: <Logout />,
-              sub: "Secure Exit",
+              label: "LOGOUT",
+              icon: <Logout sx={{ fontSize: 40 }} />,
               path: "logout",
-              num: "04",
+              color: "#bc4749",
             },
           ].map((tile, i) => (
-            <Grid item xs={12} md={6} key={i}>
-              <Box
-                sx={eliteTile}
+            <Grid item xs={12} sm={6} md={3} key={i}>
+              <Paper
+                elevation={0}
                 onClick={() =>
                   tile.path === "logout" ? handleLogout() : navigate(tile.path)
                 }
+                sx={{
+                  p: 5,
+                  borderRadius: 0,
+                  bgcolor: "#fff",
+                  cursor: "pointer",
+                  border: "2px solid #eee",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    borderColor: tile.color,
+                    transform: "translateY(-10px)",
+                    boxShadow: ` 0 20px 40px rgba(0,0,0,0.05)`,
+                  },
+                }}
               >
+                <Box sx={{ color: tile.color, mb: 3 }}>{tile.icon}</Box>
                 <Typography
-                  className="tile-number"
                   sx={{
-                    position: "absolute",
-                    top: -20,
-                    right: 20,
-                    fontSize: "10rem",
                     fontWeight: 900,
-                    color: "#f9f9f9",
-                    transition: "0.6s",
-                    zIndex: 0,
+                    fontSize: "1.1rem",
+                    letterSpacing: "0.1em",
                   }}
                 >
-                  {tile.num}
+                  {tile.label}
                 </Typography>
-
-                <Box
-                  sx={{
-                    position: "relative",
-                    zIndex: 1,
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    className="tile-icon"
-                    sx={{ color: "#a67c52", transition: "0.4s", mb: 2 }}
-                  >
-                    {tile.icon}
-                  </Box>
-                  <Typography
-                    variant="h3"
-                    sx={{ fontFamily: "serif", fontWeight: 400, mb: 1 }}
-                  >
-                    {tile.label}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#888", letterSpacing: "0.1em", mb: 6 }}
-                  >
-                    {tile.sub}
-                  </Typography>
-
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    sx={{ mt: "auto" }}
-                  >
-                    <Typography
-                      sx={{
-                        fontWeight: 900,
-                        fontSize: "0.7rem",
-                        letterSpacing: "0.3em",
-                      }}
-                    >
-                      INITIALIZE
-                    </Typography>
-                    <NorthEast
-                      className="tile-arrow"
-                      sx={{
-                        ml: 1,
-                        opacity: 0,
-                        transform: "translate(-10px, 10px)",
-                        transition: "0.4s",
-                        fontSize: "1rem",
-                      }}
-                    />
-                  </Stack>
-                </Box>
-              </Box>
+              </Paper>
             </Grid>
           ))}
         </Grid>
-      </Box>
 
-      <Box
-        sx={{
-          width: "60px",
-          borderLeft: "1px solid #eee",
-          display: { xs: "none", md: "flex" },
-          flexDirection: "column",
-          alignItems: "center",
-          py: 8,
-        }}
-      >
-        <AdminPanelSettings sx={{ color: "#a67c52", mb: 4 }} />
-        <Box sx={{ flexGrow: 1, width: "1px", bgcolor: "#eee", mb: 4 }} />
-        <Typography
-          sx={{
-            transform: "rotate(90deg)",
-            fontSize: "0.5rem",
-            color: "#bbb",
-            whiteSpace: "nowrap",
-            letterSpacing: "0.5em",
-          }}
-        >
-          SYSTEM_ENCRYPTED_256
-        </Typography>
+        <Box>
+          <Typography
+            variant="h3"
+            sx={{
+              fontFamily: "serif",
+              mb: 5,
+              borderBottom: "4px solid #a67c52",
+              display: "inline-block",
+              pb: 1,
+            }}
+          >
+            Client <b>Feedback</b>
+          </Typography>
+
+          <Stack spacing={3}>
+            {feedbacks.map((f) => (
+              <Paper
+                key={f.id}
+                elevation={0}
+                sx={{
+                  p: 5,
+                  border: "2px solid #eee",
+                  borderRadius: 0,
+                  bgcolor: "#fff",
+                }}
+              >
+                <Grid container alignItems="center" spacing={4}>
+                  <Grid item xs={12} md={8}>
+                    <Typography
+                      sx={{
+                        fontSize: "1.6rem",
+                        fontFamily: "serif",
+                        mb: 2,
+                      }}
+                    >
+                      "{f.message}"
+                    </Typography>
+
+                    <Chip
+                      label={f.status.toUpperCase()}
+                      sx={{
+                        borderRadius: 0,
+                        fontWeight: 900,
+                        px: 2,
+                        bgcolor:
+                          f.status === "approved" ? "#e8f5e9" : "#ffebee",
+                        color: f.status === "approved" ? "#2e7d32" : "#d32f2f",
+                      }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    <Stack direction="row" spacing={2}>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleApprove(f.id)}
+                        sx={{ bgcolor: "#2e7d32" }}
+                      >
+                        APPROVE
+                      </Button>
+
+                      <Button
+                        variant="contained"
+                        onClick={() => handleReject(f.id)}
+                        sx={{ bgcolor: "#d32f2f" }}
+                      >
+                        REJECT
+                      </Button>
+
+                      <Button
+                        variant="outlined"
+                        onClick={() => handleDelete(f.id)}
+                        sx={{
+                          borderColor: "#000",
+                          color: "#000",
+                          "&:hover": {
+                            bgcolor: "#000",
+                            color: "#fff",
+                          },
+                        }}
+                      >
+                        DELETE
+                      </Button>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Paper>
+            ))}
+          </Stack>
+        </Box>
       </Box>
     </Box>
   );

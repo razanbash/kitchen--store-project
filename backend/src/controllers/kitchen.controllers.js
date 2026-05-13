@@ -5,6 +5,8 @@ import {
   deleteKitchenModel,
 } from "../models/kitchen.model.js";
 
+import pool from "../config/db.js";
+
 export const getKitchens = async (req, res) => {
   try {
     const kitchens = await getAllKitchens();

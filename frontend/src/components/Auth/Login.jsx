@@ -1,18 +1,15 @@
-import api from "../../api";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext.jsx";
+import api from "../../api";
 import {
   Box,
   TextField,
   Button,
   Typography,
   Paper,
-  InputAdornment,
-  IconButton,
   Stack,
 } from "@mui/material";
-import { useState } from "react";
 import { MailOutline, LockOutlined, ArrowForward } from "@mui/icons-material";
 
 function Login() {
@@ -53,6 +50,8 @@ function Login() {
 
       if (role === "manager") {
         navigate("/managerDashboard");
+      } else if (role === "moderator") {
+        navigate("/moderator");
       } else {
         navigate("/dashboard");
       }
@@ -61,6 +60,7 @@ function Login() {
       alert("Login failed");
     }
   };
+
   return (
     <Box
       sx={{
@@ -68,7 +68,7 @@ function Login() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#b9af9a",
+        bgcolor: "#b9af9a", 
         p: 3,
         position: "relative",
         overflow: "hidden",
@@ -116,11 +116,12 @@ function Login() {
           }}
         />
 
+        {}
         <Paper
           elevation={0}
           sx={{
             width: { xs: "90%", md: "45%" },
-            ml: { md: "-10%" },
+            ml: { md: "-10%" }, 
             mt: { xs: "-50px", md: 0 },
             p: { xs: 4, md: 8 },
             bgcolor: "#fff",
@@ -168,8 +169,9 @@ function Login() {
                   ),
                 }}
                 sx={{
-                  "& .MuiInput-underline:after": {
-                    borderBottomColor: "#2c2c2c",
+                  "& .MuiInput-root": {
+                    fontSize: "0.85rem",
+                    letterSpacing: "0.1em",
                   },
                 }}
               />
@@ -188,8 +190,9 @@ function Login() {
                   ),
                 }}
                 sx={{
-                  "& .MuiInput-underline:after": {
-                    borderBottomColor: "#2c2c2c",
+                  "& .MuiInput-root": {
+                    fontSize: "0.85rem",
+                    letterSpacing: "0.1em",
                   },
                 }}
               />
@@ -197,7 +200,6 @@ function Login() {
               <Button
                 type="submit"
                 variant="contained"
-                disableElevation
                 endIcon={<ArrowForward />}
                 sx={{
                   bgcolor: "#2c2c2c",
@@ -207,8 +209,12 @@ function Login() {
                   textTransform: "uppercase",
                   letterSpacing: "0.2em",
                   fontSize: "0.75rem",
-                  "&:hover": { bgcolor: "#000", gap: "10px" },
-                  transition: "all 0.3s",
+                  fontWeight: 600,
+                  boxShadow: "none",
+                  "&:hover": {
+                    bgcolor: "#000",
+                    boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
+                  },
                 }}
               >
                 Sign In
@@ -229,6 +235,7 @@ function Login() {
               sx={{
                 color: "#aaa",
                 cursor: "pointer",
+                letterSpacing: "0.1em",
                 "&:hover": { color: "#2c2c2c" },
               }}
             >
@@ -236,7 +243,12 @@ function Login() {
             </Typography>
             <Typography
               variant="caption"
-              sx={{ fontWeight: 700, color: "#a67c52", cursor: "pointer" }}
+              sx={{
+                color: "#a67c52",
+                fontWeight: 700,
+                cursor: "pointer",
+                letterSpacing: "0.1em",
+              }}
             >
               REQUEST INVITE
             </Typography>

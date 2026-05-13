@@ -1,4 +1,4 @@
-import { pool } from "../config/db.js";
+import pool from "../config/db.js";
 
 export const getAllKitchens = async () => {
   const result = await pool.query("SELECT * FROM kitchens ORDER BY id DESC");

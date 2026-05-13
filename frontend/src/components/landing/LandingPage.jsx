@@ -1,5 +1,6 @@
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
 import Navbar from "../shared/Navbar";
 
 function LandingPage() {

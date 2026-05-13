@@ -6,16 +6,16 @@ import {
   deleteKitchen,
 } from "../controllers/kitchen.controllers.js";
 
-import { verifyToken } from "../middleware/auth.middleware.js";
+import {protect} from "../middleware/authMiddleware.js";  
 
 const router = express.Router();
 
 router.get("/", getKitchens);
 
-router.post("/", verifyToken, createKitchen);
+router.post("/", protect, createKitchen);
 
-router.put("/:id", verifyToken, updateKitchen);
+router.put("/:id", protect, updateKitchen);
 
-router.delete("/:id", verifyToken, deleteKitchen);
+router.delete("/:id", protect, deleteKitchen);
 
 export default router;
