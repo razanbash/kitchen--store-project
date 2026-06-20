@@ -25,7 +25,9 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "kitchen-store-project.vercel.app",
+    // origin: "kitchen-store-project.vercel.app",
+    origin: "http://localhost:5173",
+
     credentials: true,
   }),
 );
